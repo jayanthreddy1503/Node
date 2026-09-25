@@ -3,75 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EC2 Sample App - V2</title>
+  <title>EC2 Sample App - V3</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      max-width: 600px;
-      margin: 80px auto;
-      padding: 0 20px;
-      color: #1a1a1a;
-      background: #f7f7f8;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
     .card {
-      background: white;
-      border-radius: 12px;
-      padding: 32px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 36px;
+      max-width: 550px;
+      width: 100%;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .badge-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      animation: pulse 1.6s infinite;
+    }
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+      }
     }
     .badge {
-      background: #16a34a;
-      color: white;
-      font-weight: bold;
-      padding: 4px 10px;
+      background: rgba(34, 197, 94, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      font-weight: 600;
+      padding: 4px 12px;
       border-radius: 20px;
-      font-size: 0.8rem;
-      display: inline-block;
-      margin-bottom: 12px;
+      font-size: 0.85rem;
     }
-    h1 { font-size: 1.6rem; margin-bottom: 8px; }
-    p { color: #555; line-height: 1.5; }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+    p {
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
     button {
-      background: #2563eb;
+      background: #3b82f6;
       color: white;
       border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 0.95rem;
-      margin-top: 12px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: background 0.2s, transform 0.1s;
     }
-    button:hover { background: #1d4ed8; }
+    button:hover {
+      background: #2563eb;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    button.secondary {
+      background: #334155;
+      color: #f1f5f9;
+    }
+    button.secondary:hover {
+      background: #475569;
+    }
     pre {
-      background: #f0f0f2;
-      padding: 14px;
-      border-radius: 8px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #38bdf8;
+      padding: 16px;
+      border-radius: 10px;
       overflow-x: auto;
       font-size: 0.85rem;
-      margin-top: 16px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="badge">🔥 Deployment V2 Successful!</div>
-    <h1>🚀 It's alive and updated!</h1>
-    <p>If you're seeing this green badge, your Jenkins build successfully updated the Docker container!</p>
-    <button onclick="loadInfo()">Check server info</button>
-    <button onclick="loadVisits()">Increment visit counter</button>
-    <pre id="output">Click a button to test the API...</pre>
+    <div class="badge-container">
+      <div class="pulse-dot"></div>
+      <span class="badge">Poll SCM V3 Automated Build</span>
+    </div>
+    <h1>⚡ Application Online</h1>
+    <p>This page was automatically built and deployed by Jenkins! Modifying index.html triggered Poll SCM to build this new Docker image automatically.</p>
+    
+    <div class="btn-group">
+      <button onclick="loadInfo()">Server Info</button>
+      <button class="secondary" onclick="loadVisits()">Increment Visits</button>
+    </div>
+
+    <pre id="output">// Click a button above to test Express API responses...</pre>
   </div>
 
   <script>
     async function loadInfo() {
-      const res = await fetch('/api/info');
-      const data = await res.json();
-      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+      try {
+        const res = await fetch('/api/info');
+        const data = await res.json();
+        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('output').textContent = "Error fetching /api/info";
+      }
     }
     async function loadVisits() {
-      const res = await fetch('/api/visits');
-      const data = await res.json();
-      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+      try {
+        const res = await fetch('/api/visits');
+        const data = await res.json();
+        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('output').textContent = "Error fetching /api/visits";
+      }
     }
   </script>
 </body>
